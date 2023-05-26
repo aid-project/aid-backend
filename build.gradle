@@ -15,6 +15,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation 'com.google.guava:guava:31.1-jre'
 }
 
 tasks.named('test') {
