@@ -1,19 +1,19 @@
 package com.aid.aidbackend.service;
 
-import com.aid.aidbackend.dto.MemberDto;
+import com.aid.aidbackend.controller.dto.MemberDto;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     public Member join(MemberDto memberDto) {
         validateDuplicateEmail(memberDto.email());
@@ -21,7 +21,7 @@ public class MemberService {
 
         Member member = Member.builder()
                 .email(memberDto.email())
-                .password(memberDto.password())
+                .password(passwordEncoder.encode(memberDto.password()))
                 .nickname(memberDto.nickname())
                 .build();
 

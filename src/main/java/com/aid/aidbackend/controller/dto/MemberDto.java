@@ -1,4 +1,4 @@
-package com.aid.aidbackend.dto;
+package com.aid.aidbackend.controller.dto;
 
 
 import jakarta.validation.constraints.Email;

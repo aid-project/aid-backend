@@ -9,3 +9,7 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+
+jwt:
+  secret: ${AID_JWT_SECRET}
+  expiration: ${AID_JWT_EXPIRATION}
