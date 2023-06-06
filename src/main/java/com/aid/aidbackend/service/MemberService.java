@@ -1,6 +1,6 @@
 package com.aid.aidbackend.service;
 
-import com.aid.aidbackend.dto.MemberDto;
+import com.aid.aidbackend.controller.dto.MemberDto;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.repository.MemberRepository;

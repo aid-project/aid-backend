@@ -1,6 +1,6 @@
 package com.aid.aidbackend.controller;
 
-import com.aid.aidbackend.dto.MemberDto;
+import com.aid.aidbackend.controller.dto.MemberDto;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.service.MemberService;
 import com.aid.aidbackend.utils.ApiResult;
