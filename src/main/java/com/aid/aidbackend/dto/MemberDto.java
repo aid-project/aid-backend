@@ -1,9 +1,13 @@
 package com.aid.aidbackend.dto;
 
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+
 public record MemberDto(
-        String email,
-        String nickname,
-        String password
+        @Email @NotNull String email,
+        @NotNull String nickname,
+        @NotNull String password
 ) {
 
 }
