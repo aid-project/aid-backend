@@ -1,5 +1,6 @@
 package com.aid.aidbackend.config;
 
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(matcherRegistry -> matcherRegistry
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll() // Error dispatch 인가 예외
                         .requestMatchers(
                                 "/api/v1/hello",
                                 "/api/v1/members/signup",
