@@ -1,6 +1,6 @@
 package com.aid.aidbackend.controller;
 
-import com.aid.aidbackend.controller.dto.MemberDto;
+import com.aid.aidbackend.controller.dto.MemberRequest;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.service.MemberService;
 import com.aid.aidbackend.utils.ApiResult;
@@ -22,7 +22,7 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public ApiResult<Member> createMember(@Valid @RequestBody MemberDto memberDto) {
-        return ApiUtils.succeed(memberService.join(memberDto));
+    public ApiResult<Member> createMember(@Valid @RequestBody MemberRequest memberRequest) {
+        return ApiUtils.succeed(memberService.join(memberRequest));
     }
 }

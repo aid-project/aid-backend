@@ -36,10 +36,15 @@ public class Member {
     @Column(name = "registered_at", nullable = false, updatable = false)
     private LocalDateTime registeredAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "authority", length = 20, nullable = false)
+    private Authority authority;
+
     @Builder
-    public Member(String email, String password, String nickname) {
+    public Member(String email, String password, String nickname, Authority authority) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.authority = authority;
     }
 }

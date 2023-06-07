@@ -1,6 +1,6 @@
 package com.aid.aidbackend.service;
 
-import com.aid.aidbackend.controller.dto.MemberDto;
+import com.aid.aidbackend.controller.dto.MemberRequest;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.repository.MemberRepository;
@@ -15,17 +15,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Member join(MemberDto memberDto) {
-        validateDuplicateEmail(memberDto.email());
-        validateDuplicateNickname(memberDto.nickname());
+    public Member join(MemberRequest memberRequest) {
+        validateDuplicateEmail(memberRequest.email());
+        validateDuplicateNickname(memberRequest.nickname());
 
-        Member member = Member.builder()
-                .email(memberDto.email())
-                .password(passwordEncoder.encode(memberDto.password()))
-                .nickname(memberDto.nickname())
-                .build();
-
-        return memberRepository.save(member);
+        return memberRepository.save(memberRequest.toMember(passwordEncoder));
     }
 
     private void validateDuplicateEmail(String email) {

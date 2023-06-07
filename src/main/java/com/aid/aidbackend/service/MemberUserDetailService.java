@@ -3,6 +3,8 @@ package com.aid.aidbackend.service;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,10 +34,12 @@ public class MemberUserDetailService implements UserDetailsService {
     }
 
     private UserDetails createUserDetails(Member member) {
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
+
         return new User(
                 String.valueOf(member.getId()),
                 member.getPassword(),
-                Collections.EMPTY_LIST // authorities 사용 X
+                Collections.singleton(grantedAuthority)
         );
     }
 }
