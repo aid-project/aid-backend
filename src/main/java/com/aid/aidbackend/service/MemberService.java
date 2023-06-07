@@ -2,7 +2,6 @@ package com.aid.aidbackend.service;
 
 import com.aid.aidbackend.controller.dto.MemberRequest;
 import com.aid.aidbackend.controller.dto.MemberResponse;
-import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +16,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Member join(MemberRequest memberRequest) {
+    public void join(MemberRequest memberRequest) {
         validateDuplicateEmail(memberRequest.email());
         validateDuplicateNickname(memberRequest.nickname());
 
-        return memberRepository.save(memberRequest.toMember(passwordEncoder));
+        memberRepository.save(memberRequest.toMember(passwordEncoder));
     }
 
     public MemberResponse findOne(Long memberId) {

@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static com.aid.aidbackend.entity.Authority.ROLE_USER;
 import static jakarta.servlet.DispatcherType.ERROR;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 @EnableWebSecurity
@@ -47,13 +48,13 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(matcherRegistry -> matcherRegistry
                         .dispatcherTypeMatchers(ERROR).permitAll() // Error dispatch 인가 예외
-                        .requestMatchers(
-                                "/api/v1/hello",
-                                "/api/v1/members/signup",
+                        .requestMatchers(GET, "/api/v1/hello").permitAll()
+                        .requestMatchers(POST,
+                                "/api/v1/auth/signup",
                                 "/api/v1/auth/login"
                         ).permitAll()
                         .requestMatchers(
-                                POST, "/api/v1/members"
+                                GET, "/api/v1/members"
                         ).hasAuthority(ROLE_USER.name())
                         .anyRequest().denyAll()
                 )
