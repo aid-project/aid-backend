@@ -24,8 +24,7 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResult<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return succeed(
-                authService.login(loginRequestDto.email(), loginRequestDto.password())
+                authService.authenticate(loginRequestDto.email(), loginRequestDto.password())
         );
     }
-
 }
