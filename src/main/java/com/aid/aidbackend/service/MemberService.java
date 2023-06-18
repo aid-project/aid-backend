@@ -1,7 +1,7 @@
 package com.aid.aidbackend.service;
 
-import com.aid.aidbackend.controller.dto.MemberRequest;
-import com.aid.aidbackend.controller.dto.MemberResponse;
+import com.aid.aidbackend.controller.dto.MemberDto;
+import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +16,22 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void join(MemberRequest memberRequest) {
-        validateDuplicateEmail(memberRequest.email());
-        validateDuplicateNickname(memberRequest.nickname());
+    public void join(String email, String nickname, String password) {
+        validateDuplicateEmail(email);
+        validateDuplicateNickname(nickname);
 
-        memberRepository.save(memberRequest.toMember(passwordEncoder));
+        Member member = Member.builder()
+                .email(email)
+                .nickname(nickname)
+                .password(passwordEncoder.encode(password))
+                .build();
+
+        memberRepository.save(member);
     }
 
-    public MemberResponse findOne(Long memberId) {
+    public MemberDto findOne(Long memberId) {
         return memberRepository.findById(memberId)
-                .map(MemberResponse::of)
+                .map(MemberDto::of)
                 .orElseThrow(() -> new EmptyResultDataAccessException("해당 유저는 존재하지 않습니다.", 1));
     }
 

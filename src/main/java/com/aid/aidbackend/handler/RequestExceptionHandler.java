@@ -10,7 +10,7 @@ import static com.aid.aidbackend.utils.ApiUtils.failed;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestControllerAdvice
-public class RestRequestExceptionHandler {
+public class RequestExceptionHandler {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

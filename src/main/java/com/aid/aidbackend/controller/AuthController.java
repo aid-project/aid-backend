@@ -1,11 +1,12 @@
 package com.aid.aidbackend.controller;
 
-import com.aid.aidbackend.controller.dto.LoginRequestDto;
-import com.aid.aidbackend.controller.dto.MemberRequest;
+import com.aid.aidbackend.controller.dto.TokenDto;
 import com.aid.aidbackend.service.AuthService;
 import com.aid.aidbackend.service.MemberService;
 import com.aid.aidbackend.utils.ApiResult;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +23,39 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    public ApiResult<String> createMember(@Valid @RequestBody MemberRequest memberRequest) {
-        memberService.join(memberRequest);
+    public ApiResult<String> createMember(@Valid @RequestBody SignupRequest signupRequest) {
+        memberService.join(
+                signupRequest.email(),
+                signupRequest.nickname(),
+                signupRequest.password()
+        );
+
         return succeed("success");
     }
 
     @PostMapping("/login")
-    public ApiResult<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
-        return succeed(
-                authService.authenticate(loginRequestDto.email(), loginRequestDto.password())
+    public ApiResult<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        TokenDto token = authService.authenticate(
+                loginRequest.email(),
+                loginRequest.password()
         );
+
+        return succeed(token);
+    }
+
+    record SignupRequest(
+            @Email @NotNull String email,
+            @NotNull String nickname,
+            @NotNull String password
+    ) {
+    }
+
+    record LoginRequest(
+            @NotNull
+            String email,
+
+            @NotNull
+            String password
+    ) {
     }
 }

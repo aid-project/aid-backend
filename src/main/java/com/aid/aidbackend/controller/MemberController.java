@@ -1,9 +1,9 @@
 package com.aid.aidbackend.controller;
 
-import com.aid.aidbackend.controller.dto.MemberResponse;
+import com.aid.aidbackend.controller.dto.MemberDto;
 import com.aid.aidbackend.service.MemberService;
 import com.aid.aidbackend.utils.ApiResult;
-import com.aid.aidbackend.utils.SecurityUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,9 +21,10 @@ public class MemberController {
     }
 
     @GetMapping()
-    public ApiResult<MemberResponse> readMemberInfo() {
+    public ApiResult<MemberDto> readMemberInfo(HttpServletRequest httpServletRequest) {
+        String id = (String) httpServletRequest.getAttribute("member-id");
         return succeed(
-                memberService.findOne(SecurityUtils.getCurrentMemberId())
+                memberService.findOne(Long.valueOf(id))
         );
     }
 

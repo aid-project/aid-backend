@@ -1,27 +1,32 @@
 package com.aid.aidbackend.service;
 
 import com.aid.aidbackend.controller.dto.TokenDto;
-import com.aid.aidbackend.jwt.JwtProvider;
+import com.aid.aidbackend.entity.Member;
+import com.aid.aidbackend.exception.WrongAuthDataException;
+import com.aid.aidbackend.repository.MemberRepository;
+import com.aid.aidbackend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public TokenDto authenticate(String email, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(email, password);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new WrongAuthDataException("이메일이 존재하지 않습니다."));
 
-        /* 이메일, 비밀번호 검증 */
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new WrongAuthDataException("비밀번호가 틀렸습니다.");
+        }
 
-        return jwtProvider.generateTokenDto(authentication);
+        String memberId = String.valueOf(member.getId());
+
+        return JwtUtils.generateToken(memberId);
     }
+
 }
