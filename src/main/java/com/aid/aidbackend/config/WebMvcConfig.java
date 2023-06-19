@@ -1,6 +1,6 @@
 package com.aid.aidbackend.config;
 
-import com.aid.aidbackend.interceptor.JwtInterceptor;
+import com.aid.aidbackend.auth.interceptor.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

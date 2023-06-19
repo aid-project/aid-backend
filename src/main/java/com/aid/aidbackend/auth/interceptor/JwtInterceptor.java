@@ -1,10 +1,10 @@
-package com.aid.aidbackend.interceptor;
+package com.aid.aidbackend.auth.interceptor;
 
+import com.aid.aidbackend.auth.CurrentMember;
 import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,16 +15,17 @@ import java.util.Objects;
 
 import static com.aid.aidbackend.json.JsonUtils.toJson;
 import static com.aid.aidbackend.utils.ApiUtils.failed;
+import static com.aid.aidbackend.utils.JwtUtils.BEARER;
+import static com.aid.aidbackend.utils.JwtUtils.CURRENT_MEMBER;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
 
-    private static final String BEARER = "Bearer ";
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String bearer = request.getHeader(AUTHORIZATION);
 
         /* 토큰 헤더가 없는 경우 */
         if (Objects.isNull(bearer)) {
@@ -39,8 +40,8 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         String token = bearer.substring(7);
         try {
-            String memberId = JwtUtils.parseClaims(token).getSubject();
-            request.setAttribute("member-id", memberId);
+            Long memberId = Long.valueOf(JwtUtils.parseClaims(token).getSubject());
+            request.setAttribute(CURRENT_MEMBER, new CurrentMember(memberId));
             return true;
         } catch (Exception e) {
             buildResponse(response, SC_UNAUTHORIZED, failed(e));
