@@ -4,7 +4,7 @@ import com.aid.aidbackend.controller.dto.TokenDto;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.WrongAuthDataException;
 import com.aid.aidbackend.repository.MemberRepository;
-import com.aid.aidbackend.utils.JwtUtils;
+import com.aid.aidbackend.utils.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     public TokenDto authenticate(String email, String password) {
         Member member = memberRepository.findByEmail(email)
@@ -26,7 +27,7 @@ public class AuthService {
 
         String memberId = String.valueOf(member.getId());
 
-        return JwtUtils.generateToken(memberId);
+        return jwtProvider.generateToken(memberId);
     }
 
 }
