@@ -20,3 +20,7 @@ aws:
     secret-key: ${AID_AWS_S3_SECRET_KEY}
     region: ${AID_AWS_S3_REGION}
     bucket-name: ${AID_AWS_S3_BUCKET_NAME}
+
+ai:
+  server:
+    pictogram-path: ${AID_AI_SERVER_PICTOGRAM_PATH}

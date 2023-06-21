@@ -14,7 +14,7 @@ public class DrawingService {
     public Drawing createDrawing(Long memberId, String drawingUrl) {
         Drawing drawing = Drawing.builder()
                 .memberId(memberId)
-                .drawingUrl(drawingUrl)
+                .uri(drawingUrl)
                 .build();
 
         return drawingRepository.save(drawing);

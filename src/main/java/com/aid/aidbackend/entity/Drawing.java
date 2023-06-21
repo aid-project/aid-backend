@@ -27,17 +27,17 @@ public class Drawing {
     private boolean isPrivate;
 
     @Column(name = "drawing_url", length = 40, unique = true, nullable = false)
-    private String drawingUrl;
+    private String uri;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Builder
-    public Drawing(Long memberId, boolean isPrivate, String drawingUrl) {
+    public Drawing(Long memberId, boolean isPrivate, String uri) {
         this.memberId = memberId;
         this.isPrivate = isPrivate;
-        this.drawingUrl = drawingUrl;
+        this.uri = uri;
     }
 
 }
