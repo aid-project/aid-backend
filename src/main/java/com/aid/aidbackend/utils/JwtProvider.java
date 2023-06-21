@@ -5,16 +5,30 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
-public class JwtUtils {
+@Component
+public class JwtProvider {
+    public static final String BEARER = "Bearer ";
+    public static final String CURRENT_MEMBER = "Current-Member";
 
-    private static final Key key = Keys.hmacShaKeyFor(System.getenv("AID_JWT_SECRET").getBytes());
-    private static final long expiration = Long.parseLong(System.getenv("AID_JWT_EXPIRATION"));
+    private final Key key;
+    private final long expiration;
 
-    public static TokenDto generateToken(String id) {
+
+    public JwtProvider(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long expiration
+    ) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expiration = expiration;
+    }
+
+    public TokenDto generateToken(String id) {
         long now = new Date().getTime();
         Date exp = new Date(now + expiration);
 
@@ -27,7 +41,7 @@ public class JwtUtils {
         return new TokenDto(jwt);
     }
 
-    public static Claims parseClaims(String token) {
+    public Claims parseClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 

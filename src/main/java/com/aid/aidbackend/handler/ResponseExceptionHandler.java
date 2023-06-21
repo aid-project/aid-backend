@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ResponseExceptionHandler {
@@ -23,6 +22,12 @@ public class ResponseExceptionHandler {
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(WrongAuthDataException.class)
     protected ApiResult<Exception> handleWrongAuthDataException(WrongAuthDataException e) {
+        return ApiUtils.failed(e);
+    }
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    protected ApiResult<Exception> handleException(Exception e) {
         return ApiUtils.failed(e);
     }
 

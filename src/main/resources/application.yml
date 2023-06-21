@@ -9,3 +9,18 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+
+jwt:
+  secret: ${AID_JWT_SECRET}
+  expiration: ${AID_JWT_EXPIRATION}
+
+aws:
+  s3:
+    access-key: ${AID_AWS_S3_ACCESS_KEY}
+    secret-key: ${AID_AWS_S3_SECRET_KEY}
+    region: ${AID_AWS_S3_REGION}
+    bucket-name: ${AID_AWS_S3_BUCKET_NAME}
+
+ai:
+  server:
+    pictogram-path: ${AID_AI_SERVER_PICTOGRAM_PATH}
