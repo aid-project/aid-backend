@@ -6,6 +6,7 @@ import com.aid.aidbackend.utils.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,6 +30,13 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
+            response.setHeader("Access-Control-Allow-Origin", "http://projectaidraw.s3-website-us-east-1.amazonaws.com");
+            response.setHeader("Access-Control-Allow-Headers", AUTHORIZATION);
+            return true;
+        }
+
+
         String bearer = request.getHeader(AUTHORIZATION);
 
         /* 토큰 헤더가 없는 경우 */

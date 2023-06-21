@@ -25,6 +25,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("*");
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "http://projectaidraw.s3-website-us-east-1.amazonaws.com/");
     }
 }
