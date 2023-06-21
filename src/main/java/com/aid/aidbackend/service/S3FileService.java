@@ -36,7 +36,7 @@ public class S3FileService implements FileService {
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(uri)
-                    .contentType(MediaType.IMAGE_PNG_VALUE)
+                    .contentType(MediaType.IMAGE_JPEG_VALUE)
                     .build();
 
             PutObjectResponse putObjectResponse = s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));

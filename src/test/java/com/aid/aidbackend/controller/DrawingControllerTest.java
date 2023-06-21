@@ -36,7 +36,7 @@ class DrawingControllerTest {
         Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
 
         /* given */
-        MockMultipartFile file = new MockMultipartFile("drawing_img", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
+        MockMultipartFile file = new MockMultipartFile("drawing_img", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test".getBytes());
         String[] tags = {"tag1", "tag2", "tag3"};
 
         /* when */
