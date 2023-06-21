@@ -56,6 +56,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     private void buildResponse(HttpServletResponse response, int status, ApiResult<?> apiResult) throws IOException {
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(
                 toJson(
                         apiResult
