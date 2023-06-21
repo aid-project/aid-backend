@@ -16,18 +16,21 @@ public class ResponseExceptionHandler {
     @ResponseStatus(CONFLICT)
     @ExceptionHandler(DuplicateMemberException.class)
     protected ApiResult<Exception> handleDuplicateMemberException(DuplicateMemberException e) {
+        e.printStackTrace();
         return ApiUtils.failed(e);
     }
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(WrongAuthDataException.class)
     protected ApiResult<Exception> handleWrongAuthDataException(WrongAuthDataException e) {
+        e.printStackTrace();
         return ApiUtils.failed(e);
     }
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     protected ApiResult<Exception> handleException(Exception e) {
+        e.printStackTrace();
         return ApiUtils.failed(e);
     }
 

@@ -15,6 +15,7 @@ public class RequestExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ApiResult<Exception> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        e.getLocalizedMessage();
         return failed(e);
     }
 
