@@ -3,10 +3,14 @@ package com.aid.aidbackend.utils;
 import lombok.Getter;
 
 @Getter
-public final class ApiResult<T> {
+public class ApiResult<T> {
 
-    private final T data;
-    private final String error;
+    private T data;
+    private String error;
+
+    ApiResult() {
+        /* no-op */
+    }
 
     ApiResult(T data, String error) {
         this.data = data;
