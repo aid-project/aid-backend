@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,7 @@ public class DrawingController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
+    @Transactional
     public ApiResult<PictogramResponse> uploadDrawing(
             HttpServletRequest request,
             @RequestParam(name = "drawing_img") MultipartFile file,
