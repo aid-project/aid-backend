@@ -3,11 +3,13 @@ package com.aid.aidbackend.service;
 import com.aid.aidbackend.controller.dto.MemberDto;
 import com.aid.aidbackend.entity.Member;
 import com.aid.aidbackend.exception.DuplicateMemberException;
+import com.aid.aidbackend.exception.WrongAuthDataException;
 import com.aid.aidbackend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,16 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .map(MemberDto::of)
                 .orElseThrow(() -> new EmptyResultDataAccessException("해당 유저는 존재하지 않습니다.", 1));
+    }
+
+    @Transactional
+    public void modifyPassword(Long memberId, String password, String newPassword) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EmptyResultDataAccessException("해당 유저는 존재하지 않습니다.", 1));
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new WrongAuthDataException("비밀번호를 잘못 입력하셨습니다.");
+        }
+        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     private void validateDuplicateEmail(String email) {
