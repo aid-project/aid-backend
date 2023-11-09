@@ -2,6 +2,7 @@ package com.aid.aidbackend.handler;
 
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.exception.WrongAuthDataException;
+import com.aid.aidbackend.exception.WrongPictogramDataException;
 import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.ApiUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +27,12 @@ public class ResponseExceptionHandler {
         e.printStackTrace();
         return ApiUtils.failed(e);
     }
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(WrongPictogramDataException.class)
+    protected ApiResult<Exception> handleWrongPictogramDataException(WrongPictogramDataException e) {
+        e.printStackTrace();
+        return ApiUtils.failed(e);
+    }
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
@@ -33,5 +40,7 @@ public class ResponseExceptionHandler {
         e.printStackTrace();
         return ApiUtils.failed(e);
     }
+
+
 
 }
