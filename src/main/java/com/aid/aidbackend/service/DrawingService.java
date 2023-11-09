@@ -1,5 +1,6 @@
 package com.aid.aidbackend.service;
 
+import com.aid.aidbackend.controller.dto.DrawingDto;
 import com.aid.aidbackend.controller.dto.DrawingPageResponse;
 import com.aid.aidbackend.entity.Drawing;
 import com.aid.aidbackend.exception.WrongDrawingPageException;
@@ -40,4 +41,20 @@ public class DrawingService {
                 ))
                 .toList();
     }
+
+    public List<DrawingDto> getDrawingsById(int pageNumber, Long memberId) {
+        if (pageNumber < 0) {
+            throw new WrongDrawingPageException("나의 기록 조회 실패.");
+        }
+        Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE);
+        return drawingRepository.findAllByMemberId(memberId, pageable)
+                .map(drawing -> new DrawingDto(
+                        drawing.getId(),
+                        drawing.isPrivate(),
+                        fileService.retrieve(drawing.getUri()),
+                        drawing.getCreatedAt()
+                ))
+                .toList();
+    }
+
 }

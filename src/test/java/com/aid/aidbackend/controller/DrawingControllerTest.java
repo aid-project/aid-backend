@@ -91,4 +91,29 @@ class DrawingControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").isNotEmpty());
     }
+
+    @Test
+    @DisplayName("[그림 조회 테스트] 토큰을 기반으로 회원을 찾아 자신의 그림만 볼 수 있다.")
+    void test_04() throws Exception {
+        /* given */
+        String pageParam = "0";
+        String jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjozMDAwMDAxNjk5NTUwNTQ5fQ.AYcFKuCVzkS5D7Jol-rryRlj57EHlMFL37IwWGtn6Kk";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        /* when */
+        ResultActions result = mockMvc.perform(
+                get("/api/v1/drawings/my")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(AUTHORIZATION, BEARER + jwt)
+                        .param("page", pageParam)
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").isNumber())
+                .andExpect(jsonPath("$.data[1].is_private").isBoolean())
+                .andExpect(jsonPath("$.data[2].drawing_url").isString())
+                .andExpect(jsonPath("$.data[3].created_at").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
 }
