@@ -50,6 +50,25 @@ class PictogramControllerTest {
                 .andExpect(jsonPath("$.data[2].pictogram_url").isString())
                 .andExpect(jsonPath("$.error").doesNotExist());
 
+    }
 
+    @Test
+    @DisplayName("[픽토그램 조회] 해당 그림ID를 가진 픽토그램이 없다면 WrongPictogramDataException을 발생한다.")
+    void test_02() throws Exception {
+        // given
+
+        String drawingId = "-1";
+        MockHttpServletRequestBuilder request = get("/api/pictograms/" + drawingId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // when
+        ResultActions result = mockMvc.perform(request);
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.error").exists());
     }
 }
