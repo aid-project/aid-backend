@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.aid.aidbackend.utils.JwtProvider.BEARER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,4 +55,40 @@ class DrawingControllerTest {
                 .andExpect(jsonPath("$.data.drawing_url").isString());
     }
 
+    @Test
+    @DisplayName("[그림 조회 테스트] 클라이언트가 private 설정한 것을 제외하고 그림들을 페이지 단위로 읽을 수 있다.")
+    void test_02() throws Exception {
+        /* given */
+        String pageParam = "0";
+        /* when */
+        ResultActions result = mockMvc.perform(
+                get("/api/v1/drawings/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", pageParam)
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").isNumber())
+                .andExpect(jsonPath("$.data[1].drawing_url").isString())
+                .andExpect(jsonPath("$.data[2].created_at").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    @DisplayName("[그림 조회 테스트] 만약 param을 잘못된 값을 전달할 경우 예외가 발생된다.")
+    void test_03() throws Exception {
+        /* given */
+        String pageParam = "-1";
+        /* when */
+        ResultActions result = mockMvc.perform(
+                get("/api/v1/drawings/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", pageParam)
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").isNotEmpty());
+    }
 }

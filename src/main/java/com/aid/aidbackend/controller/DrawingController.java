@@ -1,7 +1,9 @@
 package com.aid.aidbackend.controller;
 
 import com.aid.aidbackend.auth.CurrentMember;
+import com.aid.aidbackend.controller.dto.DrawingPageResponse;
 import com.aid.aidbackend.entity.Drawing;
+import com.aid.aidbackend.repository.DrawingRepository;
 import com.aid.aidbackend.service.DrawingService;
 import com.aid.aidbackend.service.FileService;
 import com.aid.aidbackend.service.PictogramService;
@@ -38,7 +40,6 @@ public class DrawingController {
             @RequestParam(name = "tags") List<String> tags
     ) {
         CurrentMember currentMember = (CurrentMember) request.getAttribute(CURRENT_MEMBER);
-
         /* 이미지 업로드 */
         String drawingUri = fileService.upload(file);
         Drawing drawing = drawingService.createDrawing(currentMember.memberId(), drawingUri);
@@ -54,6 +55,13 @@ public class DrawingController {
 
         return succeed(new PictogramResponse(pictogramUrlList));
     }
+
+    @GetMapping("/list")
+    public ApiResult<List<DrawingPageResponse>> drawingList(@RequestParam(value = "page") int pageNumber) {
+        List<DrawingPageResponse> drawings = drawingService.getDrawings(pageNumber);
+        return succeed(drawings);
+    }
+
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     record PictogramResponse(

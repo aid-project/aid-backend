@@ -2,6 +2,7 @@ package com.aid.aidbackend.handler;
 
 import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.exception.WrongAuthDataException;
+import com.aid.aidbackend.exception.WrongDrawingPageException;
 import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.ApiUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,7 +27,12 @@ public class ResponseExceptionHandler {
         e.printStackTrace();
         return ApiUtils.failed(e);
     }
-
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(WrongDrawingPageException.class)
+    protected ApiResult<Exception> handleWrongDrawingPageException(WrongDrawingPageException e) {
+        e.printStackTrace();
+        return ApiUtils.failed(e);
+    }
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     protected ApiResult<Exception> handleException(Exception e) {

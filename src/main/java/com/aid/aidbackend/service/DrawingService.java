@@ -1,8 +1,13 @@
 package com.aid.aidbackend.service;
 
+import com.aid.aidbackend.controller.dto.DrawingPageResponse;
 import com.aid.aidbackend.entity.Drawing;
+import com.aid.aidbackend.exception.WrongDrawingPageException;
 import com.aid.aidbackend.repository.DrawingRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class DrawingService {
 
     private final DrawingRepository drawingRepository;
+    private final FileService fileService;
+    private static final int PAGE_SIZE = 9; // 한 페이지당 몇 개의 그림 id를 줄지 정하는 상수
 
     public Drawing createDrawing(Long memberId, String drawingUrl) {
         Drawing drawing = Drawing.builder()
@@ -20,4 +27,17 @@ public class DrawingService {
         return drawingRepository.save(drawing);
     }
 
+    public List<DrawingPageResponse> getDrawings(int pageNumber) {
+        if (pageNumber < 0) {
+            throw new WrongDrawingPageException("그림 정보를 조회하는데 실패했습니다.");
+        }
+        Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE);
+        return drawingRepository.findAllByIsPrivate(false, pageable)
+                .map(drawing -> new DrawingPageResponse(
+                        drawing.getId(),
+                        fileService.retrieve(drawing.getUri()),
+                        drawing.getCreatedAt()
+                ))
+                .toList();
+    }
 }
