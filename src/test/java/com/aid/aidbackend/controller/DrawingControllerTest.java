@@ -16,6 +16,7 @@ import static com.aid.aidbackend.utils.JwtProvider.BEARER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -97,7 +98,7 @@ class DrawingControllerTest {
     void test_04() throws Exception {
         /* given */
         String pageParam = "0";
-        String jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjozMDAwMDAxNjk5NTUwNTQ5fQ.AYcFKuCVzkS5D7Jol-rryRlj57EHlMFL37IwWGtn6Kk";
+        String jwt = "";
         Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
         /* when */
         ResultActions result = mockMvc.perform(
@@ -113,6 +114,27 @@ class DrawingControllerTest {
                 .andExpect(jsonPath("$.data[1].is_private").isBoolean())
                 .andExpect(jsonPath("$.data[2].drawing_url").isString())
                 .andExpect(jsonPath("$.data[3].created_at").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    @DisplayName("[그림 공개여부 변경 테스트] 그림 ID에 따른 공개여부를 변경할 수 있다. 또한, 자신의 것만 가능하다.")
+    void test_05() throws Exception {
+        /* given */
+        String drawingId = "";
+        String jwt = "";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        /* when */
+        ResultActions result = mockMvc.perform(
+                patch("/api/v1/drawings/" + drawingId)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .header(AUTHORIZATION, BEARER + jwt)
+                        .param("is_private", "false")
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data").isString())
                 .andExpect(jsonPath("$.error").isEmpty());
     }
 

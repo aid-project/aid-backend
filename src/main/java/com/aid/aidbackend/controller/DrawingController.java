@@ -68,7 +68,20 @@ public class DrawingController {
             @RequestParam(value = "page") int pageNumber
     ) {
         CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
-        return succeed(drawingService.getDrawingsById(pageNumber, currentMember.memberId()));
+        return succeed(drawingService.getDrawingsByMemberId(pageNumber, currentMember.memberId()));
+    }
+
+    @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
+    @PatchMapping("/{drawingId}")
+    public ApiResult<String> drawingModify(
+            HttpServletRequest httpServletRequest,
+            @RequestParam(name = "is_private") String isPrivate,
+            @PathVariable long drawingId
+            ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        drawingService.modifyDrawingByDrawingId(Boolean.parseBoolean(isPrivate), drawingId, currentMember.memberId());
+        return succeed("success");
     }
 
 

@@ -3,7 +3,8 @@ package com.aid.aidbackend.service;
 import com.aid.aidbackend.controller.dto.DrawingDto;
 import com.aid.aidbackend.controller.dto.DrawingPageResponse;
 import com.aid.aidbackend.entity.Drawing;
-import com.aid.aidbackend.exception.WrongDrawingPageException;
+import com.aid.aidbackend.exception.UnauthorizedDrawingAccessException;
+import com.aid.aidbackend.exception.WrongDrawingException;
 import com.aid.aidbackend.repository.DrawingRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class DrawingService {
 
     public List<DrawingPageResponse> getDrawings(int pageNumber) {
         if (pageNumber < 0) {
-            throw new WrongDrawingPageException("그림 정보를 조회하는데 실패했습니다.");
+            throw new WrongDrawingException("그림 정보를 조회하는데 실패했습니다.");
         }
         Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE);
         return drawingRepository.findAllByIsPrivate(false, pageable)
@@ -42,9 +43,9 @@ public class DrawingService {
                 .toList();
     }
 
-    public List<DrawingDto> getDrawingsById(int pageNumber, Long memberId) {
+    public List<DrawingDto> getDrawingsByMemberId(int pageNumber, Long memberId) {
         if (pageNumber < 0) {
-            throw new WrongDrawingPageException("나의 기록 조회 실패.");
+            throw new WrongDrawingException("나의 기록 조회 실패.");
         }
         Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE);
         return drawingRepository.findAllByMemberId(memberId, pageable)
@@ -57,4 +58,13 @@ public class DrawingService {
                 .toList();
     }
 
+    public void modifyDrawingByDrawingId(boolean isPrivate, Long drawingId, Long memberId) {
+        Drawing drawing = drawingRepository.findById(drawingId)
+                        .orElseThrow(() -> new WrongDrawingException("공개 여부를 수정하는데 실패하였습니다."));
+        if (drawing.getMemberId().equals(memberId)) {
+            throw new UnauthorizedDrawingAccessException("작성자만 공개 여부를 수정할 수 있습니다.");
+        }
+        drawing.updateIsPrivate(isPrivate);
+
+    }
 }
