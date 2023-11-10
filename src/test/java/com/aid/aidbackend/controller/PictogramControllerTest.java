@@ -26,16 +26,12 @@ class PictogramControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    public void setMockMvc(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
-    }
-
     @Test
     @DisplayName("[픽토그램 조회] 그림ID를 가진 픽토그램을 요청한 픽토그램을 출력한다.")
     void test_01() throws Exception {
         // given
         String drawingId = "1";
-        MockHttpServletRequestBuilder request = get("/api/pictograms/" + drawingId)
+        MockHttpServletRequestBuilder request = get("/api/v1/pictograms/" + drawingId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -58,7 +54,7 @@ class PictogramControllerTest {
         // given
 
         String drawingId = "-1";
-        MockHttpServletRequestBuilder request = get("/api/pictograms/" + drawingId)
+        MockHttpServletRequestBuilder request = get("/api/v1/pictograms/" + drawingId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 

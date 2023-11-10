@@ -6,6 +6,7 @@ import com.aid.aidbackend.entity.Drawing;
 import com.aid.aidbackend.exception.UnauthorizedDrawingAccessException;
 import com.aid.aidbackend.exception.WrongDrawingException;
 import com.aid.aidbackend.repository.DrawingRepository;
+import com.aid.aidbackend.repository.PictogramRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class DrawingService {
 
     private final DrawingRepository drawingRepository;
+    private final PictogramRepository pictogramRepository;
     private final FileService fileService;
     private static final int PAGE_SIZE = 9; // 한 페이지당 몇 개의 그림 id를 줄지 정하는 상수
 
@@ -65,6 +67,17 @@ public class DrawingService {
             throw new UnauthorizedDrawingAccessException("작성자만 공개 여부를 수정할 수 있습니다.");
         }
         drawing.updateIsPrivate(isPrivate);
+
+    }
+
+    public void removeDrawingByDrawingId(long drawingId, Long memberId) {
+        Drawing drawing = drawingRepository.findById(drawingId)
+                .orElseThrow(() -> new WrongDrawingException("그림을 삭제하는데 실패했습니다."));
+        if (!drawing.getMemberId().equals(memberId)) {
+            throw new UnauthorizedDrawingAccessException("작성자만 자신의 그림을 삭제할 수 있습니다.");
+        }
+        pictogramRepository.deleteAllByDrawingId(drawingId);
+        drawingRepository.deleteById(drawingId);
 
     }
 }

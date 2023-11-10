@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.aid.aidbackend.utils.JwtProvider.BEARER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -126,7 +127,7 @@ class DrawingControllerTest {
         Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
         /* when */
         ResultActions result = mockMvc.perform(
-                patch("/api/v1/drawings/" + drawingId)
+                patch("/api/v1/drawings/my/" + drawingId)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .header(AUTHORIZATION, BEARER + jwt)
                         .param("is_private", "false")
@@ -138,4 +139,25 @@ class DrawingControllerTest {
                 .andExpect(jsonPath("$.error").isEmpty());
     }
 
+
+    @Test
+    @Transactional
+    @DisplayName("[그림 삭제 테스트] 그림 ID에 맞는 그림을 삭제 가능하다. 자신의 것만 가능하며, 관계된 픽토그램들도 삭제된다.")
+    void test_06() throws Exception {
+        /* given */
+        String drawingId = "14";
+        String jwt = "";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        /* when */
+        ResultActions result = mockMvc.perform(
+                delete("/api/v1/drawings/my/" + drawingId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(AUTHORIZATION, BEARER + jwt)
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
 }

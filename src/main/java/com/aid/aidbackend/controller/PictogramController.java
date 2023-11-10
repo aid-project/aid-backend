@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.aid.aidbackend.utils.ApiUtils.succeed;
 
 @RestController
-@RequestMapping("/api/pictograms")
+@RequestMapping("/api/v1/pictograms")
 @RequiredArgsConstructor
 public class PictogramController {
 

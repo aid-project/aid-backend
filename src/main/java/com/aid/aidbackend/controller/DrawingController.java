@@ -73,7 +73,7 @@ public class DrawingController {
 
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
-    @PatchMapping("/{drawingId}")
+    @PatchMapping("/my/{drawingId}")
     public ApiResult<String> drawingModify(
             HttpServletRequest httpServletRequest,
             @RequestParam(name = "is_private") String isPrivate,
@@ -84,6 +84,16 @@ public class DrawingController {
         return succeed("success");
     }
 
+    @Transactional
+    @DeleteMapping("/my/{drawingId}")
+    public ApiResult<String> drawingDelete(
+            HttpServletRequest httpServletRequest,
+            @PathVariable long drawingId
+    ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        drawingService.removeDrawingByDrawingId(drawingId, currentMember.memberId());
+        return succeed("success");
+    }
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     record PictogramResponse(
