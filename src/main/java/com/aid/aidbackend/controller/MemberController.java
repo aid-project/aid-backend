@@ -6,9 +6,10 @@ import com.aid.aidbackend.service.MemberService;
 import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import static com.aid.aidbackend.utils.ApiUtils.succeed;
 
@@ -28,6 +29,29 @@ public class MemberController {
         return succeed(
                 memberService.findOne(currentMember.memberId())
         );
+    }
+    @PatchMapping("/password")
+    @ResponseStatus(HttpStatus.CREATED) // status 를 여기에다 했는데 괜찮은가요?
+    public ApiResult<MemberDto> changePassword(
+            HttpServletRequest httpServletRequest,
+            @Valid @RequestBody ChangePasswordRequest changePasswordRequest
+    ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        memberService.modifyPassword(
+                currentMember.memberId(),
+                changePasswordRequest.password,
+                changePasswordRequest.new_password
+        );
+
+        return succeed(
+
+            null
+        );
+    }
+    record ChangePasswordRequest(
+            @NotNull String password,
+            @NotNull String new_password
+    ) {
     }
 
 }
