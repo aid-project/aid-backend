@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import static com.aid.aidbackend.utils.ApiUtils.succeed;
@@ -31,8 +32,9 @@ public class MemberController {
         );
     }
     @PatchMapping("/password")
-    @ResponseStatus(HttpStatus.CREATED) // status 를 여기에다 했는데 괜찮은가요?
-    public ApiResult<MemberDto> changePassword(
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    public ApiResult<String> changePassword(
             HttpServletRequest httpServletRequest,
             @Valid @RequestBody ChangePasswordRequest changePasswordRequest
     ) {
@@ -44,8 +46,7 @@ public class MemberController {
         );
 
         return succeed(
-
-            null
+            "success"
         );
     }
     record ChangePasswordRequest(

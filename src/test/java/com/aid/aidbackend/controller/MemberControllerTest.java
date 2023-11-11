@@ -84,7 +84,8 @@ class MemberControllerTest {
 
         /* then */
         result.andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data").isString());
     }
 
 }
