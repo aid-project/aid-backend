@@ -4,6 +4,7 @@ import com.aid.aidbackend.exception.DuplicateMemberException;
 import com.aid.aidbackend.exception.UnauthorizedDrawingAccessException;
 import com.aid.aidbackend.exception.WrongAuthDataException;
 import com.aid.aidbackend.exception.WrongDrawingException;
+import com.aid.aidbackend.exception.WrongMemberException;
 import com.aid.aidbackend.exception.WrongPictogramDataException;
 import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.ApiUtils;
@@ -45,6 +46,13 @@ public class ResponseExceptionHandler {
     @ResponseStatus(FORBIDDEN)
     @ExceptionHandler(UnauthorizedDrawingAccessException.class)
     protected ApiResult<Exception> handleUnauthorizedDrawingAccessException(UnauthorizedDrawingAccessException e) {
+        e.printStackTrace();
+        return ApiUtils.failed(e);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(WrongMemberException.class)
+    protected ApiResult<Exception> handleWrongMemberException(WrongMemberException e) {
         e.printStackTrace();
         return ApiUtils.failed(e);
     }

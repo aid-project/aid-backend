@@ -7,7 +7,7 @@ import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +19,7 @@ import static com.aid.aidbackend.utils.ApiUtils.succeed;
 public class MemberController {
 
     private final MemberService memberService;
+    private final String successMessage = "success";
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -46,13 +47,43 @@ public class MemberController {
         );
 
         return succeed(
-            "success"
+            successMessage
         );
     }
-    record ChangePasswordRequest(
-            @NotNull String password,
-            @NotNull String new_password
+
+    @PatchMapping("/nickname")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    public ApiResult<String> changeNickname(
+        HttpServletRequest httpServletRequest,
+        @Valid @RequestBody ChangeNicknameRequest changeNicknameRequest
     ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        memberService.modifyNickname(currentMember.memberId(), changeNicknameRequest.nickname);
+
+        return succeed(successMessage);
+    }
+
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public ApiResult<String> removeMember(
+            HttpServletRequest httpServletRequest
+    ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        memberService.removeMember(currentMember.memberId());
+        return succeed(successMessage);
+    }
+
+    record ChangePasswordRequest(
+            @NotBlank String password,
+            @NotBlank String new_password
+    ) {
+    }
+
+    record ChangeNicknameRequest(
+            @NotBlank String nickname
+    ){
     }
 
 }
