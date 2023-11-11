@@ -56,6 +56,12 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
+    public void modifyProfile(Long memberId, String profileUrl) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EmptyResultDataAccessException("해당 유저는 존재하지 않습니다.", 1));
+        member.updateProfileUrl(profileUrl);
+    }
+
     private void validateDuplicateEmail(String email) {
         if (memberRepository.findByEmail(email).orElse(null) != null) {
             throw new DuplicateMemberException("이미 존재하는 이메일입니다.");

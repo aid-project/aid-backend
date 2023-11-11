@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -139,6 +141,31 @@ class MemberControllerTest {
         /* then */
         result.andDo(print())
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.data").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    @DisplayName("[프로필사진 변경] 클라이언트의 프로필사진을 변경한다.")
+    @Transactional
+    void test_05() throws Exception {
+        /* given */
+        String jwt = "";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        MockMultipartFile file = new MockMultipartFile("profile_img", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test".getBytes());
+
+
+        MockHttpServletRequestBuilder request = multipart("/api/v1/members/profile")
+                .file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt);
+
+        /* when */
+        ResultActions result = mockMvc.perform(request);
+
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data").isString())
                 .andExpect(jsonPath("$.error").isEmpty());
     }

@@ -2,28 +2,32 @@ package com.aid.aidbackend.controller;
 
 import com.aid.aidbackend.auth.CurrentMember;
 import com.aid.aidbackend.controller.dto.MemberDto;
+import com.aid.aidbackend.service.FileService;
 import com.aid.aidbackend.service.MemberService;
 import com.aid.aidbackend.utils.ApiResult;
 import com.aid.aidbackend.utils.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.aid.aidbackend.utils.ApiUtils.succeed;
+import static com.aid.aidbackend.utils.JwtProvider.CURRENT_MEMBER;
 
 @RestController
 @RequestMapping("/api/v1/members")
+@RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
-    private final String successMessage = "success";
 
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
+    private final FileService fileService;
+    private static final String SUCCESS_MESSAGE = "success";
+
 
     @GetMapping()
     public ApiResult<MemberDto> readMemberInfo(HttpServletRequest httpServletRequest) {
@@ -47,7 +51,7 @@ public class MemberController {
         );
 
         return succeed(
-            successMessage
+                SUCCESS_MESSAGE
         );
     }
 
@@ -61,7 +65,7 @@ public class MemberController {
         CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
         memberService.modifyNickname(currentMember.memberId(), changeNicknameRequest.nickname);
 
-        return succeed(successMessage);
+        return succeed(SUCCESS_MESSAGE);
     }
 
     @DeleteMapping()
@@ -72,7 +76,22 @@ public class MemberController {
     ) {
         CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
         memberService.removeMember(currentMember.memberId());
-        return succeed(successMessage);
+        return succeed(SUCCESS_MESSAGE);
+    }
+
+    @PostMapping("/profile")
+    @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResult<String> changeProfile(
+            HttpServletRequest httpServletRequest,
+            @RequestParam(name = "profile_img") MultipartFile file
+    ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(CURRENT_MEMBER);
+
+        String profileUrl = fileService.upload(file);
+        memberService.modifyProfile(currentMember.memberId(), profileUrl);
+
+        return succeed(SUCCESS_MESSAGE);
     }
 
     record ChangePasswordRequest(
