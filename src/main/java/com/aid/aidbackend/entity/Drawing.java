@@ -40,4 +40,7 @@ public class Drawing {
         this.uri = uri;
     }
 
+    public void updateIsPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
 }

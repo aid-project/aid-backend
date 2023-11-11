@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface DrawingRepository extends JpaRepository<Drawing, Long> {
     Optional<Drawing> findByUri(String drawingUri);
     Page<Drawing> findAllByIsPrivate(boolean isPrivate, Pageable pageable);
+
+    Page<Drawing> findAllByMemberId(Long memberId, Pageable pageable);
 }

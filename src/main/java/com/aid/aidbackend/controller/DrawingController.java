@@ -1,13 +1,14 @@
 package com.aid.aidbackend.controller;
 
 import com.aid.aidbackend.auth.CurrentMember;
+import com.aid.aidbackend.controller.dto.DrawingDto;
 import com.aid.aidbackend.controller.dto.DrawingPageResponse;
 import com.aid.aidbackend.entity.Drawing;
-import com.aid.aidbackend.repository.DrawingRepository;
 import com.aid.aidbackend.service.DrawingService;
 import com.aid.aidbackend.service.FileService;
 import com.aid.aidbackend.service.PictogramService;
 import com.aid.aidbackend.utils.ApiResult;
+import com.aid.aidbackend.utils.JwtProvider;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,10 +59,41 @@ public class DrawingController {
 
     @GetMapping("/list")
     public ApiResult<List<DrawingPageResponse>> drawingList(@RequestParam(value = "page") int pageNumber) {
-        List<DrawingPageResponse> drawings = drawingService.getDrawings(pageNumber);
-        return succeed(drawings);
+        return succeed(drawingService.getDrawings(pageNumber));
     }
 
+    @GetMapping("/my")
+    public ApiResult<List<DrawingDto>> drawingMyList(
+            HttpServletRequest httpServletRequest,
+            @RequestParam(value = "page") int pageNumber
+    ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        return succeed(drawingService.getDrawingsByMemberId(pageNumber, currentMember.memberId()));
+    }
+
+    @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
+    @PatchMapping("/my/{drawingId}")
+    public ApiResult<String> drawingModify(
+            HttpServletRequest httpServletRequest,
+            @RequestParam(name = "is_private") String isPrivate,
+            @PathVariable long drawingId
+            ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        drawingService.modifyDrawingByDrawingId(Boolean.parseBoolean(isPrivate), drawingId, currentMember.memberId());
+        return succeed("success");
+    }
+
+    @Transactional
+    @DeleteMapping("/my/{drawingId}")
+    public ApiResult<String> drawingDelete(
+            HttpServletRequest httpServletRequest,
+            @PathVariable long drawingId
+    ) {
+        CurrentMember currentMember = (CurrentMember) httpServletRequest.getAttribute(JwtProvider.CURRENT_MEMBER);
+        drawingService.removeDrawingByDrawingId(drawingId, currentMember.memberId());
+        return succeed("success");
+    }
 
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     record PictogramResponse(

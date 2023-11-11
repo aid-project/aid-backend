@@ -14,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.aid.aidbackend.utils.JwtProvider.BEARER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,5 +92,72 @@ class DrawingControllerTest {
         result.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("[그림 조회 테스트] 토큰을 기반으로 회원을 찾아 자신의 그림만 볼 수 있다.")
+    void test_04() throws Exception {
+        /* given */
+        String pageParam = "0";
+        String jwt = "";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        /* when */
+        ResultActions result = mockMvc.perform(
+                get("/api/v1/drawings/my")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(AUTHORIZATION, BEARER + jwt)
+                        .param("page", pageParam)
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").isNumber())
+                .andExpect(jsonPath("$.data[1].is_private").isBoolean())
+                .andExpect(jsonPath("$.data[2].drawing_url").isString())
+                .andExpect(jsonPath("$.data[3].created_at").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    @DisplayName("[그림 공개여부 변경 테스트] 그림 ID에 따른 공개여부를 변경할 수 있다. 또한, 자신의 것만 가능하다.")
+    void test_05() throws Exception {
+        /* given */
+        String drawingId = "";
+        String jwt = "";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        /* when */
+        ResultActions result = mockMvc.perform(
+                patch("/api/v1/drawings/my/" + drawingId)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .header(AUTHORIZATION, BEARER + jwt)
+                        .param("is_private", "false")
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+
+    @Test
+    @Transactional
+    @DisplayName("[그림 삭제 테스트] 그림 ID에 맞는 그림을 삭제 가능하다. 자신의 것만 가능하며, 관계된 픽토그램들도 삭제된다.")
+    void test_06() throws Exception {
+        /* given */
+        String drawingId = "14";
+        String jwt = "";
+        Assertions.assertNotEquals("", jwt, "토큰 데이터가 없습니다.");
+        /* when */
+        ResultActions result = mockMvc.perform(
+                delete("/api/v1/drawings/my/" + drawingId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(AUTHORIZATION, BEARER + jwt)
+        );
+        /* then */
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isString())
+                .andExpect(jsonPath("$.error").isEmpty());
     }
 }
